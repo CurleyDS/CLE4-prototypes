@@ -533,14 +533,12 @@ const pixi = new _pixiJs.Application({
     width: 800,
     height: 450
 });
+document.body.appendChild(pixi.view);
 const drawBuffer = new _pixiJs.Container();
 const renderTexture = _pixiJs.RenderTexture.create({
     width: 1024,
     height: 1024
 });
-const drawingStarted = false;
-const lastPosition = null;
-document.body.appendChild(pixi.view);
 // preload all the textures
 const loader = new _pixiJs.Loader();
 // loader.add('', ) laadt de images in de variabelen uit de import
@@ -555,6 +553,34 @@ function loadCompleted() {
     sprite.position.set(pixi.screen.width / 2, pixi.screen.height / 2);
     sprite.interactive = true;
     pixi.stage.addChild(sprite);
+    let drawingStarted = false;
+    let lastPosition = null;
+    const onDown = (e)=>{
+        const position = sprite.toLocal(e.data.global);
+        position.x += 512; // canvas size is 1024x1024, so we offset the position by the half of its resolution
+        position.y += 512;
+        lastPosition = position;
+        drawingStarted = true;
+    };
+    const onMove = (e)=>{
+        const position = sprite.toLocal(e.data.global);
+        position.x += 512;
+        position.y += 512;
+        if (drawingStarted) drawPointLine(lastPosition, position);
+        lastPosition = position;
+    };
+    const onUp = (e)=>{
+        drawingStarted = false;
+    };
+    sprite.on('mousedown', onDown);
+    sprite.on('touchstart', onDown);
+    sprite.on('mousemove', onMove);
+    sprite.on('touchmove', onMove);
+    sprite.on('mouseup', onUp);
+    sprite.on('touchend', onUp);
+    pixi.ticker.add(()=>{
+        renderPoints();
+    });
 }
 function drawPoint(x, y) {
     const sprite = spritePool.get(); // you can create a new sprite or use one from the pool, see live example sources below
@@ -589,32 +615,6 @@ function drawPointLine(oldPos, newPos) {
         }
     }
 }
-const onDown = (e)=>{
-    const position = sprite.toLocal(e.data.global);
-    position.x += 512; // canvas size is 1024x1024, so we offset the position by the half of its resolution
-    position.y += 512;
-    lastPosition = position;
-    drawingStarted = true;
-};
-const onMove = (e)=>{
-    const position = sprite.toLocal(e.data.global);
-    position.x += 512;
-    position.y += 512;
-    if (drawingStarted) drawPointLine(lastPosition, position);
-    lastPosition = position;
-};
-const onUp = (e)=>{
-    drawingStarted = false;
-};
-pixi.ticker.add(()=>{
-    renderPoints();
-});
-sprite.on('mousedown', onDown);
-sprite.on('touchstart', onDown);
-sprite.on('mousemove', onMove);
-sprite.on('touchmove', onMove);
-sprite.on('mouseup', onUp);
-sprite.on('touchend', onUp);
 
 },{"pixi.js":"dsYej"}],"dsYej":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");

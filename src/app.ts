@@ -3,13 +3,10 @@ import * as PIXI from 'pixi.js'
 
 // create a pixi canvas
 const pixi = new PIXI.Application({ width: 800, height: 450 })
+document.body.appendChild(pixi.view)
+
 const drawBuffer = new PIXI.Container();
 const renderTexture = PIXI.RenderTexture.create({width: 1024, height: 1024});
-
-const drawingStarted = false;
-const lastPosition = null;
-
-document.body.appendChild(pixi.view)
 
 // preload all the textures
 const loader = new PIXI.Loader()
@@ -25,9 +22,48 @@ function loadCompleted() {
     sprite.position.set(pixi.screen.width / 2, pixi.screen.height / 2);
     sprite.interactive = true;
     pixi.stage.addChild(sprite);
+
+	let drawingStarted:boolean = false;
+	let lastPosition:any = null;
+	
+	const onDown = (e:any) => {
+		const position = sprite.toLocal(e.data.global);
+		position.x += 512; // canvas size is 1024x1024, so we offset the position by the half of its resolution
+		position.y += 512;
+
+		lastPosition = position;
+		drawingStarted = true;
+	};
+
+	const onMove = (e:any) => {
+		const position = sprite.toLocal(e.data.global);
+		position.x += 512;
+		position.y += 512;
+
+		if (drawingStarted) {
+			drawPointLine(lastPosition, position)
+		}
+
+		lastPosition = position;
+	};
+
+	const onUp = (e:any) => {
+		drawingStarted = false;
+	};
+
+	sprite.on('mousedown', onDown);
+	sprite.on('touchstart', onDown);
+	sprite.on('mousemove', onMove);
+	sprite.on('touchmove', onMove);
+	sprite.on('mouseup', onUp);
+	sprite.on('touchend', onUp);
+	
+	pixi.ticker.add(() => {
+		renderPoints();
+	});
 }
 
-function drawPoint(x, y) {
+function drawPoint(x:any, y:any) {
 	const sprite = spritePool.get(); // you can create a new sprite or use one from the pool, see live example sources below
 	sprite.x = x;
 	sprite.y = y;
@@ -49,7 +85,7 @@ function renderPoints() {
 	drawBuffer.children = []; // when all sprites are rendered we can clear drawBuffer
 }
 
-function drawPointLine(oldPos, newPos) {
+function drawPointLine(oldPos:any, newPos:PIXI.Point) {
 	const delta = {
 		x: oldPos.x - newPos.x,
 		y: oldPos.y - newPos.y
@@ -71,39 +107,3 @@ function drawPointLine(oldPos, newPos) {
 		}
 	}
 }
-
-const onDown = (e) => {
-    const position = sprite.toLocal(e.data.global);
-    position.x += 512; // canvas size is 1024x1024, so we offset the position by the half of its resolution
-    position.y += 512;
-
-    lastPosition = position;
-    drawingStarted = true;
-};
-
-const onMove = (e) => {
-    const position = sprite.toLocal(e.data.global);
-    position.x += 512;
-    position.y += 512;
-
-    if (drawingStarted) {
-        drawPointLine(lastPosition, position)
-    }
-
-    lastPosition = position;
-};
-
-const onUp = (e) => {
-    drawingStarted = false;
-};
-
-pixi.ticker.add(() => {
-    renderPoints();
-});
-
-sprite.on('mousedown', onDown);
-sprite.on('touchstart', onDown);
-sprite.on('mousemove', onMove);
-sprite.on('touchmove', onMove);
-sprite.on('mouseup', onUp);
-sprite.on('touchend', onUp);
