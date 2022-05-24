@@ -526,22 +526,26 @@ function hmrAcceptRun(bundle, id) {
 }
 
 },{}],"kuM8f":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 // import files
 var _pixiJs = require("pixi.js");
+var _saucePng = require("./images/sauce.png");
+var _saucePngDefault = parcelHelpers.interopDefault(_saucePng);
 // create a pixi canvas
 const pixi = new _pixiJs.Application({
     width: 800,
     height: 450
 });
 document.body.appendChild(pixi.view);
-const drawBuffer = new _pixiJs.Container();
 const renderTexture = _pixiJs.RenderTexture.create({
-    width: 1024,
-    height: 1024
+    width: 800,
+    height: 450
 });
+let drawingStarted = false;
 // preload all the textures
 const loader = new _pixiJs.Loader();
-// loader.add('', ) laadt de images in de variabelen uit de import
+loader.add('sauceTexture', _saucePngDefault.default) // laadt de images in de variabelen uit de import
+;
 loader.load(()=>loadCompleted()
 );
 // after loading is complete
@@ -553,21 +557,19 @@ function loadCompleted() {
     sprite.position.set(pixi.screen.width / 2, pixi.screen.height / 2);
     sprite.interactive = true;
     pixi.stage.addChild(sprite);
-    let drawingStarted = false;
-    let lastPosition = null;
+    let drawPosition = null;
     const onDown = (e)=>{
         const position = sprite.toLocal(e.data.global);
-        position.x += 512; // canvas size is 1024x1024, so we offset the position by the half of its resolution
-        position.y += 512;
-        lastPosition = position;
+        position.x += 400; // canvas size is 1024x1024, so we offset the position by the half of its resolution
+        position.y += 225;
+        drawPosition = position;
         drawingStarted = true;
     };
     const onMove = (e)=>{
         const position = sprite.toLocal(e.data.global);
-        position.x += 512;
-        position.y += 512;
-        if (drawingStarted) drawPointLine(lastPosition, position);
-        lastPosition = position;
+        position.x += 400;
+        position.y += 225;
+        drawPosition = position;
     };
     const onUp = (e)=>{
         drawingStarted = false;
@@ -578,45 +580,20 @@ function loadCompleted() {
     sprite.on('touchmove', onMove);
     sprite.on('mouseup', onUp);
     sprite.on('touchend', onUp);
-    pixi.ticker.add(()=>{
-        renderPoints();
-    });
+    pixi.ticker.add((delta)=>update(delta, drawPosition)
+    );
 }
-function drawPoint(x, y) {
-    const sprite = spritePool.get(); // you can create a new sprite or use one from the pool, see live example sources below
-    sprite.x = x;
-    sprite.y = y;
-    sprite.texture = brushTexture; // texture for single point, see explanation below
-    if (useEraser) {
-        sprite.filter = new _pixiJs.filters.AlphaFilter();
-        sprite.blendMode = _pixiJs.BLEND_MODES.ERASE;
-    } else sprite.blendMode = _pixiJs.BLEND_MODES.NORMAL;
-    drawBuffer.addChild(sprite);
-}
-function renderPoints() {
-    pixi.renderer.render(drawBuffer, renderTexture, false); // render all sprites from drawBuffer to renderTexture without clearing it
-    drawBuffer.children = []; // when all sprites are rendered we can clear drawBuffer
-}
-function drawPointLine(oldPos, newPos) {
-    const delta = {
-        x: oldPos.x - newPos.x,
-        y: oldPos.y - newPos.y
-    };
-    const deltaLength = Math.sqrt(delta.x ** 2 + delta.y ** 2);
-    drawPoint(newPos.x, newPos.y);
-    if (deltaLength >= brushSize / 8) {
-        const additionalPoints = Math.ceil(deltaLength / (brushSize / 8));
-        for(let i = 1; i < additionalPoints; i++){
-            const pos = {
-                x: newPos.x + delta.x * (i / additionalPoints),
-                y: newPos.y + delta.y * (i / additionalPoints)
-            };
-            drawPoint(pos.x, pos.y);
-        }
+function update(delta, position) {
+    if (drawingStarted) {
+        let sauce = new _pixiJs.Sprite(loader.resources["sauceTexture"].texture);
+        sauce.anchor.set(0.5);
+        sauce.x = position.x;
+        sauce.y = position.y;
+        pixi.stage.addChild(sauce);
     }
 }
 
-},{"pixi.js":"dsYej"}],"dsYej":[function(require,module,exports) {
+},{"pixi.js":"dsYej","./images/sauce.png":"gec0Q","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"dsYej":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "utils", ()=>_utils
@@ -37131,6 +37108,43 @@ function __extends(d, b) {
     return AnimatedSprite1;
 }(_sprite.Sprite);
 
-},{"@pixi/core":"7PEF8","@pixi/sprite":"9mbxh","@pixi/ticker":"8ekG7","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}]},["fCkIi","kuM8f"], "kuM8f", "parcelRequired566")
+},{"@pixi/core":"7PEF8","@pixi/sprite":"9mbxh","@pixi/ticker":"8ekG7","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"gec0Q":[function(require,module,exports) {
+module.exports = require('./helpers/bundle-url').getBundleURL('FLaer') + "sauce.5c73d642.png" + "?" + Date.now();
+
+},{"./helpers/bundle-url":"lgJ39"}],"lgJ39":[function(require,module,exports) {
+"use strict";
+var bundleURL = {};
+function getBundleURLCached(id) {
+    var value = bundleURL[id];
+    if (!value) {
+        value = getBundleURL();
+        bundleURL[id] = value;
+    }
+    return value;
+}
+function getBundleURL() {
+    try {
+        throw new Error();
+    } catch (err) {
+        var matches = ('' + err.stack).match(/(https?|file|ftp|(chrome|moz)-extension):\/\/[^)\n]+/g);
+        if (matches) // The first two stack frames will be this function and getBundleURLCached.
+        // Use the 3rd one, which will be a runtime in the original bundle.
+        return getBaseURL(matches[2]);
+    }
+    return '/';
+}
+function getBaseURL(url) {
+    return ('' + url).replace(/^((?:https?|file|ftp|(chrome|moz)-extension):\/\/.+)\/[^/]+$/, '$1') + '/';
+} // TODO: Replace uses with `new URL(url).origin` when ie11 is no longer supported.
+function getOrigin(url) {
+    var matches = ('' + url).match(/(https?|file|ftp|(chrome|moz)-extension):\/\/[^/]+/);
+    if (!matches) throw new Error('Origin not found');
+    return matches[0];
+}
+exports.getBundleURL = getBundleURLCached;
+exports.getBaseURL = getBaseURL;
+exports.getOrigin = getOrigin;
+
+},{}]},["fCkIi","kuM8f"], "kuM8f", "parcelRequired566")
 
 //# sourceMappingURL=index.83fbc3b8.js.map

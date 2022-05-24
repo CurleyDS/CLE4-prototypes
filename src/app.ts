@@ -1,16 +1,18 @@
 // import files
 import * as PIXI from 'pixi.js'
+import sauceImage from './images/sauce.png'
 
 // create a pixi canvas
-const pixi = new PIXI.Application({ width: 800, height: 450 })
+const pixi = new PIXI.Application({ width: 800, height: 450, })
 document.body.appendChild(pixi.view)
 
-const drawBuffer = new PIXI.Container();
-const renderTexture = PIXI.RenderTexture.create({width: 1024, height: 1024});
+const renderTexture = PIXI.RenderTexture.create({width: 800, height: 450})
+
+let drawingStarted:boolean = false
 
 // preload all the textures
 const loader = new PIXI.Loader()
-// loader.add('', ) laadt de images in de variabelen uit de import
+loader.add('sauceTexture', sauceImage) // laadt de images in de variabelen uit de import
 loader.load(()=>loadCompleted())
 
 // after loading is complete
@@ -23,28 +25,23 @@ function loadCompleted() {
     sprite.interactive = true;
     pixi.stage.addChild(sprite);
 
-	let drawingStarted:boolean = false;
-	let lastPosition:any = null;
+	let drawPosition:any = null;
 	
 	const onDown = (e:any) => {
 		const position = sprite.toLocal(e.data.global);
-		position.x += 512; // canvas size is 1024x1024, so we offset the position by the half of its resolution
-		position.y += 512;
+		position.x += 400; // canvas size is 1024x1024, so we offset the position by the half of its resolution
+		position.y += 225;
 
-		lastPosition = position;
+		drawPosition = position;
 		drawingStarted = true;
 	};
 
 	const onMove = (e:any) => {
 		const position = sprite.toLocal(e.data.global);
-		position.x += 512;
-		position.y += 512;
+		position.x += 400;
+		position.y += 225;
 
-		if (drawingStarted) {
-			drawPointLine(lastPosition, position)
-		}
-
-		lastPosition = position;
+		drawPosition = position;
 	};
 
 	const onUp = (e:any) => {
@@ -57,53 +54,16 @@ function loadCompleted() {
 	sprite.on('touchmove', onMove);
 	sprite.on('mouseup', onUp);
 	sprite.on('touchend', onUp);
-	
-	pixi.ticker.add(() => {
-		renderPoints();
-	});
+
+	pixi.ticker.add((delta) => update(delta, drawPosition));
 }
 
-function drawPoint(x:any, y:any) {
-	const sprite = spritePool.get(); // you can create a new sprite or use one from the pool, see live example sources below
-	sprite.x = x;
-	sprite.y = y;
-	sprite.texture = brushTexture; // texture for single point, see explanation below
-
-	if (useEraser) {
-		sprite.filter = new PIXI.filters.AlphaFilter();
-		sprite.blendMode = PIXI.BLEND_MODES.ERASE;
-	} else {
-		sprite.blendMode = PIXI.BLEND_MODES.NORMAL;
-	}
-
-	drawBuffer.addChild(sprite);
-}
-
-function renderPoints() {
-	pixi.renderer.render(drawBuffer, renderTexture, false); // render all sprites from drawBuffer to renderTexture without clearing it
-
-	drawBuffer.children = []; // when all sprites are rendered we can clear drawBuffer
-}
-
-function drawPointLine(oldPos:any, newPos:PIXI.Point) {
-	const delta = {
-		x: oldPos.x - newPos.x,
-		y: oldPos.y - newPos.y
-	};
-	const deltaLength = Math.sqrt(delta.x ** 2 + delta.y ** 2);
-
-	drawPoint(newPos.x, newPos.y);
-
-	if (deltaLength >= brushSize / 8) {
-		const additionalPoints = Math.ceil(deltaLength / (brushSize / 8));
-
-		for (let i = 1; i < additionalPoints; i++) {
-			const pos = {
-				x: newPos.x + delta.x * (i / additionalPoints),
-				y: newPos.y + delta.y * (i / additionalPoints),
-			};
-
-			drawPoint(pos.x, pos.y);
-		}
+function update(delta:number, position:any) {
+	if (drawingStarted) {
+		let sauce = new PIXI.Sprite(loader.resources["sauceTexture"].texture!)
+		sauce.anchor.set(0.5);
+		sauce.x = position.x;
+		sauce.y = position.y;
+		pixi.stage.addChild(sauce);
 	}
 }
