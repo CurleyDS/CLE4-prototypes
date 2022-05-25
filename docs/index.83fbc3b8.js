@@ -529,6 +529,8 @@ function hmrAcceptRun(bundle, id) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 // import files
 var _pixiJs = require("pixi.js");
+var _pizzaPng = require("./images/pizza.png");
+var _pizzaPngDefault = parcelHelpers.interopDefault(_pizzaPng);
 var _saucePng = require("./images/sauce.png");
 var _saucePngDefault = parcelHelpers.interopDefault(_saucePng);
 // create a pixi canvas
@@ -537,20 +539,24 @@ const pixi = new _pixiJs.Application({
     height: 450
 });
 document.body.appendChild(pixi.view);
-const renderTexture = _pixiJs.RenderTexture.create({
-    width: 800,
-    height: 450
-});
+const pizza = new _pixiJs.Graphics();
+// Circle
+pizza.lineStyle(0); // draw a circle, set the lineStyle to zero so the circle doesn't have an outline
+pizza.beginFill(0xFDDA0D, 1);
+pizza.drawCircle(100, 250, 50);
+pizza.endFill();
 let drawingStarted = false;
 // preload all the textures
 const loader = new _pixiJs.Loader();
+loader.add('pizzaTexture', _pizzaPngDefault.default) // laadt de images in de variabelen uit de import
+;
 loader.add('sauceTexture', _saucePngDefault.default) // laadt de images in de variabelen uit de import
 ;
 loader.load(()=>loadCompleted()
 );
 // after loading is complete
 function loadCompleted() {
-    const sprite = new _pixiJs.Sprite(renderTexture);
+    const sprite = new _pixiJs.Sprite(loader.resources["pizzaTexture"].texture);
     sprite.anchor.set(0.5);
     sprite.width = pixi.screen.height / 2;
     sprite.height = pixi.screen.height / 2;
@@ -580,10 +586,10 @@ function loadCompleted() {
     sprite.on('touchmove', onMove);
     sprite.on('mouseup', onUp);
     sprite.on('touchend', onUp);
-    pixi.ticker.add((delta)=>update(delta, drawPosition)
+    pixi.ticker.add((delta)=>draw(delta, drawPosition)
     );
 }
-function update(delta, position) {
+function draw(delta, position) {
     if (drawingStarted) {
         let sauce = new _pixiJs.Sprite(loader.resources["sauceTexture"].texture);
         sauce.anchor.set(0.5);
@@ -593,7 +599,7 @@ function update(delta, position) {
     }
 }
 
-},{"pixi.js":"dsYej","./images/sauce.png":"gec0Q","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"dsYej":[function(require,module,exports) {
+},{"pixi.js":"dsYej","./images/sauce.png":"gec0Q","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./images/pizza.png":"eqZ8e"}],"dsYej":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "utils", ()=>_utils
@@ -37145,6 +37151,9 @@ exports.getBundleURL = getBundleURLCached;
 exports.getBaseURL = getBaseURL;
 exports.getOrigin = getOrigin;
 
-},{}]},["fCkIi","kuM8f"], "kuM8f", "parcelRequired566")
+},{}],"eqZ8e":[function(require,module,exports) {
+module.exports = require('./helpers/bundle-url').getBundleURL('FLaer') + "pizza.b4e0a36a.png" + "?" + Date.now();
+
+},{"./helpers/bundle-url":"lgJ39"}]},["fCkIi","kuM8f"], "kuM8f", "parcelRequired566")
 
 //# sourceMappingURL=index.83fbc3b8.js.map

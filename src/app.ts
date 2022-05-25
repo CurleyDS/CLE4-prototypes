@@ -1,23 +1,32 @@
 // import files
 import * as PIXI from 'pixi.js'
+import pizzaImage from './images/pizza.png'
 import sauceImage from './images/sauce.png'
 
 // create a pixi canvas
 const pixi = new PIXI.Application({ width: 800, height: 450, })
 document.body.appendChild(pixi.view)
 
-const renderTexture = PIXI.RenderTexture.create({width: 800, height: 450})
+
+const pizza = new PIXI.Graphics();
+
+// Circle
+pizza.lineStyle(0); // draw a circle, set the lineStyle to zero so the circle doesn't have an outline
+pizza.beginFill(0xFDDA0D, 1);
+pizza.drawCircle(100, 250, 50);
+pizza.endFill();
 
 let drawingStarted:boolean = false
 
 // preload all the textures
 const loader = new PIXI.Loader()
+loader.add('pizzaTexture', pizzaImage) // laadt de images in de variabelen uit de import
 loader.add('sauceTexture', sauceImage) // laadt de images in de variabelen uit de import
 loader.load(()=>loadCompleted())
 
 // after loading is complete
 function loadCompleted() {
-    const sprite = new PIXI.Sprite(renderTexture);
+    const sprite = new PIXI.Sprite(loader.resources["pizzaTexture"].texture!);
     sprite.anchor.set(0.5);
     sprite.width = pixi.screen.height / 2;
     sprite.height = pixi.screen.height / 2;
@@ -55,10 +64,10 @@ function loadCompleted() {
 	sprite.on('mouseup', onUp);
 	sprite.on('touchend', onUp);
 
-	pixi.ticker.add((delta) => update(delta, drawPosition));
+	pixi.ticker.add((delta) => draw(delta, drawPosition));
 }
 
-function update(delta:number, position:any) {
+function draw(delta:number, position:any) {
 	if (drawingStarted) {
 		let sauce = new PIXI.Sprite(loader.resources["sauceTexture"].texture!)
 		sauce.anchor.set(0.5);
