@@ -15,3 +15,4 @@ function loadCompleted() {
     let  = new PIXI.Sprite(loader.resources[""].texture!) // zet image om in een sprite en zet deze in een variabele
     pixi.stage.addChild() // voeg variabele toe aan het pixi canvas
 }
+//penis
