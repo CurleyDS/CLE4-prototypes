@@ -3,76 +3,83 @@ import * as PIXI from 'pixi.js'
 import pizzaImage from './images/pizza.png'
 import sauceImage from './images/sauce.png'
 
-// create a pixi canvas
-const pixi = new PIXI.Application({ width: 800, height: 450, })
-document.body.appendChild(pixi.view)
+export class Game {
 
-
-const pizza = new PIXI.Graphics();
-
-// Circle
-pizza.lineStyle(0); // draw a circle, set the lineStyle to zero so the circle doesn't have an outline
-pizza.beginFill(0xFDDA0D, 1);
-pizza.drawCircle(100, 250, 50);
-pizza.endFill();
-
-let drawingStarted:boolean = false
-
-// preload all the textures
-const loader = new PIXI.Loader()
-loader.add('pizzaTexture', pizzaImage) // laadt de images in de variabelen uit de import
-loader.add('sauceTexture', sauceImage) // laadt de images in de variabelen uit de import
-loader.load(()=>loadCompleted())
-
-// after loading is complete
-function loadCompleted() {
-    const sprite = new PIXI.Sprite(loader.resources["pizzaTexture"].texture!);
-    sprite.anchor.set(0.5);
-    sprite.width = pixi.screen.height / 2;
-    sprite.height = pixi.screen.height / 2;
-    sprite.position.set(pixi.screen.width / 2, pixi.screen.height / 2);
-    sprite.interactive = true;
-    pixi.stage.addChild(sprite);
-
-	let drawPosition:any = null;
+	pixi:PIXI.Application
+	pizza:PIXI.Sprite
+	drawPosition:any
+	drawingStarted:boolean
+	loader:PIXI.Loader
 	
-	const onDown = (e:any) => {
-		const position = sprite.toLocal(e.data.global);
-		position.x += 400; // canvas size is 1024x1024, so we offset the position by the half of its resolution
-		position.y += 225;
+	constructor() {
+		// create a pixi canvas
+		this.pixi = new PIXI.Application({ width: 800, height: 450, })
+		document.body.appendChild(this.pixi.view)
 
-		drawPosition = position;
-		drawingStarted = true;
-	};
+		this.drawPosition = null;
+		this.drawingStarted = false
 
-	const onMove = (e:any) => {
-		const position = sprite.toLocal(e.data.global);
-		position.x += 400;
-		position.y += 225;
-
-		drawPosition = position;
-	};
-
-	const onUp = (e:any) => {
-		drawingStarted = false;
-	};
-
-	sprite.on('mousedown', onDown);
-	sprite.on('touchstart', onDown);
-	sprite.on('mousemove', onMove);
-	sprite.on('touchmove', onMove);
-	sprite.on('mouseup', onUp);
-	sprite.on('touchend', onUp);
-
-	pixi.ticker.add((delta) => draw(delta, drawPosition));
-}
-
-function draw(delta:number, position:any) {
-	if (drawingStarted) {
-		let sauce = new PIXI.Sprite(loader.resources["sauceTexture"].texture!)
-		sauce.anchor.set(0.5);
-		sauce.x = position.x;
-		sauce.y = position.y;
-		pixi.stage.addChild(sauce);
+		// preload all the textures
+		this.loader = new PIXI.Loader()
+		this.loader
+			.add('pizzaTexture', pizzaImage) // laadt de images in de variabelen uit de import
+			.add('sauceTexture', sauceImage) // laadt de images in de variabelen uit de import
+		this.loader.load(() => this.loadCompleted())
 	}
+
+	// after loading is complete
+	loadCompleted() {
+		this.pizza = new PIXI.Sprite(this.loader.resources["pizzaTexture"].texture!);
+		this.pizza.anchor.set(0.5);
+		this.pizza.width = this.pixi.screen.height / 2;
+		this.pizza.height = this.pixi.screen.height / 2;
+		this.pizza.position.set(this.pixi.screen.width / 2, this.pixi.screen.height / 2);
+		this.pizza.interactive = true;
+		this.pixi.stage.addChild(this.pizza);
+		
+		const onDown = (e:any) => {
+			const position = this.pizza.toLocal(e.data.global);
+			position.x += 400; // canvas size is 1024x1024, so we offset the position by the half of its resolution
+			position.y += 225;
+
+			this.drawPosition = position;
+			this.drawingStarted = true;
+		}
+
+		const onMove = (e:any) => {
+			if (this.drawingStarted) {
+				const position = this.pizza.toLocal(e.data.global);
+				position.x += 400;
+				position.y += 225;
+
+				this.drawPosition = position;
+			}
+		}
+
+		const onUp = (e:any) => {
+			this.drawingStarted = false;
+		}
+
+		this.pizza.on('mousedown', onDown);
+		this.pizza.on('touchstart', onDown);
+		this.pizza.on('mousemove', onMove);
+		this.pizza.on('touchmove', onMove);
+		this.pizza.on('mouseup', onUp);
+		this.pizza.on('touchend', onUp);
+
+		this.pixi.ticker.add((delta) => this.draw(delta, this.drawPosition));
+	}
+
+	draw(delta:number, position:any) {
+		if (this.drawingStarted) {
+			let sauce = new PIXI.Sprite(this.loader.resources["sauceTexture"].texture!)
+			sauce.anchor.set(0.5);
+			sauce.x = position.x;
+			sauce.y = position.y;
+			this.pixi.stage.addChild(sauce);
+		}
+	}
+
 }
+
+new Game()
