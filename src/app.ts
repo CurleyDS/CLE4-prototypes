@@ -3,28 +3,30 @@ import * as PIXI from 'pixi.js'
 import pizzaImage from './images/pizza.png'
 import sauceImage from './images/sauce.png'
 
-export class Game {
+export class Pizza {
 
-	pixi:PIXI.Application
-	pizza:PIXI.Sprite
-	drawPosition:any
-	drawingStarted:boolean
-	loader:PIXI.Loader
+	pixi:PIXI.Application;
+	pizza:PIXI.Sprite;
+	drawPosition:any;
+	insideBorder:boolean;
+	drawingStarted:boolean;
+	loader:PIXI.Loader;
 	
 	constructor() {
 		// create a pixi canvas
-		this.pixi = new PIXI.Application({ width: 800, height: 450, })
-		document.body.appendChild(this.pixi.view)
+		this.pixi = new PIXI.Application({ width: 800, height: 450, });
+		document.body.appendChild(this.pixi.view);
 
 		this.drawPosition = null;
-		this.drawingStarted = false
+		this.insideBorder = false;
+		this.drawingStarted = false;
 
 		// preload all the textures
-		this.loader = new PIXI.Loader()
+		this.loader = new PIXI.Loader();
 		this.loader
 			.add('pizzaTexture', pizzaImage) // laadt de images in de variabelen uit de import
-			.add('sauceTexture', sauceImage) // laadt de images in de variabelen uit de import
-		this.loader.load(() => this.loadCompleted())
+			.add('sauceTexture', sauceImage); // laadt de images in de variabelen uit de import
+		this.loader.load(() => this.loadCompleted());
 	}
 
 	// after loading is complete
@@ -42,8 +44,11 @@ export class Game {
 			position.x += 400; // canvas size is 1024x1024, so we offset the position by the half of its resolution
 			position.y += 225;
 
-			this.drawPosition = position;
-			this.drawingStarted = true;
+			if (this.withinBorder()) {
+				this.drawPosition = position;
+				this.insideBorder = true;
+				this.drawingStarted = true;
+			}
 		}
 
 		const onMove = (e:any) => {
@@ -67,19 +72,35 @@ export class Game {
 		this.pizza.on('mouseup', onUp);
 		this.pizza.on('touchend', onUp);
 
-		this.pixi.ticker.add((delta) => this.draw(delta, this.drawPosition));
+		this.pixi.ticker.add(() => this.addSauce(this.drawPosition));
 	}
 
-	draw(delta:number, position:any) {
-		if (this.drawingStarted) {
-			let sauce = new PIXI.Sprite(this.loader.resources["sauceTexture"].texture!)
-			sauce.anchor.set(0.5);
-			sauce.x = position.x;
-			sauce.y = position.y;
-			this.pixi.stage.addChild(sauce);
+	withinBorder() {
+		const center = {
+			x: 400,
+			y: 225
+		}
+
+		const outer = {
+			x: 400 + (this.pizza.width / 2),
+			y: 225 + (this.pizza.height / 2)
+		}
+
+		return true;
+	}
+
+	addSauce(position:any) {
+		if (this.insideBorder) {
+			if (this.drawingStarted) {
+				let sauce = new PIXI.Sprite(this.loader.resources["sauceTexture"].texture!)
+				sauce.anchor.set(0.5);
+				sauce.x = position.x;
+				sauce.y = position.y;
+				this.pixi.stage.addChild(sauce);
+			}
 		}
 	}
 
 }
 
-new Game()
+new Pizza();

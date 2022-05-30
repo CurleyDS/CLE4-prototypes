@@ -528,7 +528,7 @@ function hmrAcceptRun(bundle, id) {
 },{}],"kuM8f":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "Game", ()=>Game
+parcelHelpers.export(exports, "Pizza", ()=>Pizza
 );
 // import files
 var _pixiJs = require("pixi.js");
@@ -536,7 +536,7 @@ var _pizzaPng = require("./images/pizza.png");
 var _pizzaPngDefault = parcelHelpers.interopDefault(_pizzaPng);
 var _saucePng = require("./images/sauce.png");
 var _saucePngDefault = parcelHelpers.interopDefault(_saucePng);
-class Game {
+class Pizza {
     constructor(){
         // create a pixi canvas
         this.pixi = new _pixiJs.Application({
@@ -545,12 +545,12 @@ class Game {
         });
         document.body.appendChild(this.pixi.view);
         this.drawPosition = null;
+        this.insideBorder = false;
         this.drawingStarted = false;
         // preload all the textures
         this.loader = new _pixiJs.Loader();
         this.loader.add('pizzaTexture', _pizzaPngDefault.default) // laadt de images in de variabelen uit de import
-        .add('sauceTexture', _saucePngDefault.default) // laadt de images in de variabelen uit de import
-        ;
+        .add('sauceTexture', _saucePngDefault.default); // laadt de images in de variabelen uit de import
         this.loader.load(()=>this.loadCompleted()
         );
     }
@@ -567,8 +567,11 @@ class Game {
             const position = this.pizza.toLocal(e.data.global);
             position.x += 400; // canvas size is 1024x1024, so we offset the position by the half of its resolution
             position.y += 225;
-            this.drawPosition = position;
-            this.drawingStarted = true;
+            if (this.withinBorder()) {
+                this.drawPosition = position;
+                this.insideBorder = true;
+                this.drawingStarted = true;
+            }
         };
         const onMove = (e)=>{
             if (this.drawingStarted) {
@@ -587,20 +590,33 @@ class Game {
         this.pizza.on('touchmove', onMove);
         this.pizza.on('mouseup', onUp);
         this.pizza.on('touchend', onUp);
-        this.pixi.ticker.add((delta)=>this.draw(delta, this.drawPosition)
+        this.pixi.ticker.add(()=>this.addSauce(this.drawPosition)
         );
     }
-    draw(delta, position) {
-        if (this.drawingStarted) {
-            let sauce = new _pixiJs.Sprite(this.loader.resources["sauceTexture"].texture);
-            sauce.anchor.set(0.5);
-            sauce.x = position.x;
-            sauce.y = position.y;
-            this.pixi.stage.addChild(sauce);
+    withinBorder() {
+        const center = {
+            x: 400,
+            y: 225
+        };
+        const outer = {
+            x: 400 + this.pizza.width / 2,
+            y: 225 + this.pizza.height / 2
+        };
+        return true;
+    }
+    addSauce(position) {
+        if (this.insideBorder) {
+            if (this.drawingStarted) {
+                let sauce = new _pixiJs.Sprite(this.loader.resources["sauceTexture"].texture);
+                sauce.anchor.set(0.5);
+                sauce.x = position.x;
+                sauce.y = position.y;
+                this.pixi.stage.addChild(sauce);
+            }
         }
     }
 }
-new Game();
+new Pizza();
 
 },{"pixi.js":"dsYej","./images/pizza.png":"eqZ8e","./images/sauce.png":"gec0Q","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"dsYej":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
