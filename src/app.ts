@@ -7,6 +7,7 @@ export class Pizza {
 
 	pixi:PIXI.Application;
 	pizza:PIXI.Sprite;
+	sauce:PIXI.Sprite[] = [];
 	drawPosition:any;
 	insideBorder:boolean;
 	drawingStarted:boolean;
@@ -97,6 +98,7 @@ export class Pizza {
 				sauce.x = position.x;
 				sauce.y = position.y;
 				this.pixi.stage.addChild(sauce);
+				this.sauce.push(sauce);
 			}
 		}
 	}

@@ -537,6 +537,7 @@ var _pizzaPngDefault = parcelHelpers.interopDefault(_pizzaPng);
 var _saucePng = require("./images/sauce.png");
 var _saucePngDefault = parcelHelpers.interopDefault(_saucePng);
 class Pizza {
+    sauce = [];
     constructor(){
         // create a pixi canvas
         this.pixi = new _pixiJs.Application({
@@ -612,6 +613,7 @@ class Pizza {
                 sauce.x = position.x;
                 sauce.y = position.y;
                 this.pixi.stage.addChild(sauce);
+                this.sauce.push(sauce);
             }
         }
     }
