@@ -528,7 +528,7 @@ function hmrAcceptRun(bundle, id) {
 },{}],"kuM8f":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "Pizza", ()=>Pizza
+parcelHelpers.export(exports, "Game", ()=>Game
 );
 // import files
 var _pixiJs = require("pixi.js");
@@ -536,7 +536,9 @@ var _pizzaPng = require("./images/pizza.png");
 var _pizzaPngDefault = parcelHelpers.interopDefault(_pizzaPng);
 var _saucePng = require("./images/sauce.png");
 var _saucePngDefault = parcelHelpers.interopDefault(_saucePng);
-class Pizza {
+var _pizza = require("./pizza");
+var _sauce = require("./sauce");
+class Game {
     sauce = [];
     constructor(){
         // create a pixi canvas
@@ -557,12 +559,7 @@ class Pizza {
     }
     // after loading is complete
     loadCompleted() {
-        this.pizza = new _pixiJs.Sprite(this.loader.resources["pizzaTexture"].texture);
-        this.pizza.anchor.set(0.5);
-        this.pizza.width = this.pixi.screen.height / 2;
-        this.pizza.height = this.pixi.screen.height / 2;
-        this.pizza.position.set(this.pixi.screen.width / 2, this.pixi.screen.height / 2);
-        this.pizza.interactive = true;
+        this.pizza = new _pizza.Pizza(this.loader.resources["pizzaTexture"].texture, this.pixi.screen.width, this.pixi.screen.height);
         this.pixi.stage.addChild(this.pizza);
         const onDown = (e)=>{
             const position = this.pizza.toLocal(e.data.global);
@@ -608,19 +605,16 @@ class Pizza {
     addSauce(position) {
         if (this.insideBorder) {
             if (this.drawingStarted) {
-                let sauce = new _pixiJs.Sprite(this.loader.resources["sauceTexture"].texture);
-                sauce.anchor.set(0.5);
-                sauce.x = position.x;
-                sauce.y = position.y;
+                let sauce = new _sauce.Sauce(this.loader.resources["sauceTexture"].texture, position);
                 this.pixi.stage.addChild(sauce);
                 this.sauce.push(sauce);
             }
         }
     }
 }
-new Pizza();
+new Game();
 
-},{"pixi.js":"dsYej","./images/pizza.png":"eqZ8e","./images/sauce.png":"gec0Q","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"dsYej":[function(require,module,exports) {
+},{"pixi.js":"dsYej","./images/pizza.png":"eqZ8e","./images/sauce.png":"gec0Q","./pizza":"kAG7L","./sauce":"9hQyl","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"dsYej":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "utils", ()=>_utils
@@ -37175,6 +37169,46 @@ exports.getOrigin = getOrigin;
 },{}],"gec0Q":[function(require,module,exports) {
 module.exports = require('./helpers/bundle-url').getBundleURL('FLaer') + "sauce.5c73d642.png" + "?" + Date.now();
 
-},{"./helpers/bundle-url":"lgJ39"}]},["fCkIi","kuM8f"], "kuM8f", "parcelRequired566")
+},{"./helpers/bundle-url":"lgJ39"}],"kAG7L":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "Pizza", ()=>Pizza
+);
+var _pixiJs = require("pixi.js");
+class Pizza extends _pixiJs.Sprite {
+    constructor(texture, width, height){
+        super(texture);
+        this.anchor.set(0.5);
+        this.width = height / 2;
+        this.height = height / 2;
+        this.position.set(width / 2, height / 2);
+        this.interactive = true;
+    }
+    update(delta) {
+        if (this.y <= 0) this.y = 450;
+        else this.y -= 5 * delta;
+    }
+}
+
+},{"pixi.js":"dsYej","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"9hQyl":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "Sauce", ()=>Sauce
+);
+var _pixiJs = require("pixi.js");
+class Sauce extends _pixiJs.Sprite {
+    constructor(texture, position){
+        super(texture);
+        this.anchor.set(0.5);
+        this.x = position.x;
+        this.y = position.y;
+    }
+    update(delta) {
+        if (this.y <= 0) this.y = 450;
+        else this.y -= 5 * delta;
+    }
+}
+
+},{"pixi.js":"dsYej","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}]},["fCkIi","kuM8f"], "kuM8f", "parcelRequired566")
 
 //# sourceMappingURL=index.83fbc3b8.js.map

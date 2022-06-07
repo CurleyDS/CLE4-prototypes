@@ -2,12 +2,14 @@
 import * as PIXI from 'pixi.js'
 import pizzaImage from './images/pizza.png'
 import sauceImage from './images/sauce.png'
+import { Pizza } from "./pizza"
+import { Sauce } from "./sauce"
 
-export class Pizza {
+export class Game {
 
 	pixi:PIXI.Application;
-	pizza:PIXI.Sprite;
-	sauce:PIXI.Sprite[] = [];
+	pizza:Pizza;
+	sauce:Sauce[] = [];
 	drawPosition:any;
 	insideBorder:boolean;
 	drawingStarted:boolean;
@@ -32,12 +34,11 @@ export class Pizza {
 
 	// after loading is complete
 	loadCompleted() {
-		this.pizza = new PIXI.Sprite(this.loader.resources["pizzaTexture"].texture!);
-		this.pizza.anchor.set(0.5);
-		this.pizza.width = this.pixi.screen.height / 2;
-		this.pizza.height = this.pixi.screen.height / 2;
-		this.pizza.position.set(this.pixi.screen.width / 2, this.pixi.screen.height / 2);
-		this.pizza.interactive = true;
+		this.pizza = new Pizza(
+			this.loader.resources["pizzaTexture"].texture!,
+			this.pixi.screen.width,
+			this.pixi.screen.height
+		);
 		this.pixi.stage.addChild(this.pizza);
 		
 		const onDown = (e:any) => {
@@ -93,10 +94,7 @@ export class Pizza {
 	addSauce(position:any) {
 		if (this.insideBorder) {
 			if (this.drawingStarted) {
-				let sauce = new PIXI.Sprite(this.loader.resources["sauceTexture"].texture!)
-				sauce.anchor.set(0.5);
-				sauce.x = position.x;
-				sauce.y = position.y;
+				let sauce = new Sauce(this.loader.resources["sauceTexture"].texture!, position)
 				this.pixi.stage.addChild(sauce);
 				this.sauce.push(sauce);
 			}
@@ -105,4 +103,4 @@ export class Pizza {
 
 }
 
-new Pizza();
+new Game();
