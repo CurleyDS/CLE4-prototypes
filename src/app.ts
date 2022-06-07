@@ -78,16 +78,6 @@ export class Game {
 	}
 
 	withinBorder() {
-		const center = {
-			x: 400,
-			y: 225
-		}
-
-		const outer = {
-			x: 400 + (this.pizza.width / 2),
-			y: 225 + (this.pizza.height / 2)
-		}
-
 		return true;
 	}
 

@@ -592,14 +592,6 @@ class Game {
         );
     }
     withinBorder() {
-        const center = {
-            x: 400,
-            y: 225
-        };
-        const outer = {
-            x: 400 + this.pizza.width / 2,
-            y: 225 + this.pizza.height / 2
-        };
         return true;
     }
     addSauce(position) {
@@ -37183,6 +37175,7 @@ class Pizza extends _pixiJs.Sprite {
         this.height = height / 2;
         this.position.set(width / 2, height / 2);
         this.interactive = true;
+        this.hitbox = new _pixiJs.Circle(0, 0, this.width / 2);
     }
     update(delta) {
         if (this.y <= 0) this.y = 450;
