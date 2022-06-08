@@ -10,19 +10,14 @@ export class Game {
 	pixi:PIXI.Application;
 	pizza:Pizza;
 	sauce:Sauce[] = [];
-	drawPosition:any;
-	insideBorder:boolean;
-	drawingStarted:boolean;
+	drawPosition:any = null;
+	drawingStarted:boolean = false;
 	loader:PIXI.Loader;
 	
 	constructor() {
 		// create a pixi canvas
 		this.pixi = new PIXI.Application({ width: 800, height: 450, });
 		document.body.appendChild(this.pixi.view);
-
-		this.drawPosition = null;
-		this.insideBorder = false;
-		this.drawingStarted = false;
 
 		// preload all the textures
 		this.loader = new PIXI.Loader();
@@ -46,9 +41,8 @@ export class Game {
 			position.x += 400; // canvas size is 1024x1024, so we offset the position by the half of its resolution
 			position.y += 225;
 
-			if (this.withinBorder()) {
+			if (this.insideBorder(position)) {
 				this.drawPosition = position;
-				this.insideBorder = true;
 				this.drawingStarted = true;
 			}
 		}
@@ -59,7 +53,13 @@ export class Game {
 				position.x += 400;
 				position.y += 225;
 
-				this.drawPosition = position;
+				if (this.insideBorder(position)) {
+					console.log("inside borders");
+					this.drawPosition = position;
+				} else {
+					console.log("outside borders");
+					this.drawingStarted = false;
+				}
 			}
 		}
 
@@ -74,17 +74,29 @@ export class Game {
 		this.pizza.on('mouseup', onUp);
 		this.pizza.on('touchend', onUp);
 
-		this.pixi.ticker.add(() => this.addSauce(this.drawPosition));
+		this.pixi.ticker.add(() => this.addSauce());
 	}
 
-	withinBorder() {
-		return true;
+	insideBorder(position:any) {
+		if (position != null) {
+			const bounds = this.pizza.hitbox;
+			let center = {
+				x: 400,
+				y: 225
+			};
+	
+			let distance = (center.x - position.x) * (center.x - position.x) + (center.y - position.y) * (center.y - position.y);
+			if (distance > bounds.radius) {
+				return true;
+			}
+			return false;
+		}
 	}
 
-	addSauce(position:any) {
-		if (this.insideBorder) {
+	addSauce() {
+		if (this.insideBorder(this.drawPosition)) {
 			if (this.drawingStarted) {
-				let sauce = new Sauce(this.loader.resources["sauceTexture"].texture!, position)
+				let sauce = new Sauce(this.loader.resources["sauceTexture"].texture!, this.drawPosition)
 				this.pixi.stage.addChild(sauce);
 				this.sauce.push(sauce);
 			}
