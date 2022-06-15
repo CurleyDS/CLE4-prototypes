@@ -603,7 +603,8 @@ class Game {
                 y: 225
             };
             let distance = (center.x - position.x) * (center.x - position.x) + (center.y - position.y) * (center.y - position.y);
-            if (distance > bounds.radius) return true;
+            let radius = bounds.radius * bounds.radius;
+            if (distance < radius) return true;
             return false;
         }
     }

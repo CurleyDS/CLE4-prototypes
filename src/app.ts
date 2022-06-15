@@ -86,7 +86,8 @@ export class Game {
 			};
 	
 			let distance = (center.x - position.x) * (center.x - position.x) + (center.y - position.y) * (center.y - position.y);
-			if (distance > bounds.radius) {
+			let radius = bounds.radius * bounds.radius;
+			if (distance < radius) {
 				return true;
 			}
 			return false;
