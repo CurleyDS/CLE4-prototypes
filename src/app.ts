@@ -8,7 +8,7 @@ import { Sauce } from "./sauce"
 export class Game {
 
 	pixiCanvas:any = document.getElementById("pixi-canvas");
-  pixi:PIXI.Application;
+  	pixi:PIXI.Application;
 	resetButton:any = document.getElementById('reset');
 	pizza:Pizza;
 	sauce:Sauce[] = [];
@@ -19,7 +19,7 @@ export class Game {
 	constructor() {
 		// create a pixi canvas
 		this.pixi = new PIXI.Application({ width: 800, height: 450, });
-		pixiCanvas.appendChild(this.pixi.view);
+		this.pixiCanvas.appendChild(this.pixi.view);
 
 		// preload all the textures
 		this.loader = new PIXI.Loader();
