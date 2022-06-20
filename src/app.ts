@@ -2,6 +2,8 @@
 import * as PIXI from 'pixi.js'
 import pizzaImage from './images/pizza.png'
 import sauceImage from './images/sauce.png'
+import pepperoniPizza from "./images/pepperoni.png"
+import bottomPizza from "./images/bottom.png"
 import { Pizza } from "./pizza"
 import { Sauce } from "./sauce"
 
@@ -22,6 +24,8 @@ export class Game {
 		// preload all the textures
 		this.loader = new PIXI.Loader();
 		this.loader
+      .add('pepperoniTexture', pepperoniPizza)
+      .add('bottomTexture', bottomPizza)
 			.add('pizzaTexture', pizzaImage) // laadt de images in de variabelen uit de import
 			.add('sauceTexture', sauceImage); // laadt de images in de variabelen uit de import
 		this.loader.load(() => this.loadCompleted());
@@ -46,6 +50,23 @@ export class Game {
 				this.drawingStarted = true;
 			}
 		}
+    
+    let pepperoni = new PIXI.Sprite(loader.resources["pepperoniTexture"].texture!)
+    pepperoni.anchor.set(0.5);
+    pepperoni.width = pixi.screen.height / 2;
+    pepperoni.height = pixi.screen.height / 2;
+    pepperoni.position.set(pixi.screen.width / 2, pixi.screen.height / 2);
+    pepperoni.interactive = true;
+
+    let bottom = new PIXI.Sprite(loader.resources["bottomTexture"].texture!)
+    bottom.anchor.set(0.5);
+    bottom.width = pixi.screen.height / 2;
+    bottom.height = pixi.screen.height / 2;
+    bottom.position.set(pixi.screen.width / 2, pixi.screen.height / 2);
+    bottom.interactive = true;
+    
+    pixi.stage.addChild(pepperoni);
+    pixi.ticker.add((delta) => update(delta))
 
 		const onMove = (e:any) => {
 			if (this.drawingStarted) {
@@ -76,7 +97,18 @@ export class Game {
 
 		this.pixi.ticker.add(() => this.addSauce());
 	}
-
+  
+  function update(delta:number) {
+    pepperoni.y -= 5 * delta
+    if (pepperoni.y < -600) {
+      pixi.stage.removeChild(pepperoni)
+      if (pixi.stage.children.length == 0){
+        pixi.stage.addChild(bottom);
+        console.log(`is dat zo dylan?`)
+      }
+    }
+  }
+  
 	insideBorder(position:any) {
 		if (position != null) {
 			const bounds = this.pizza.hitbox;
