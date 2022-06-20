@@ -526,29 +526,64 @@ function hmrAcceptRun(bundle, id) {
 }
 
 },{}],"kuM8f":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 // import files
 var _pixiJs = require("pixi.js");
+var _pepperoniPng = require("./images/pepperoni.png");
+var _pepperoniPngDefault = parcelHelpers.interopDefault(_pepperoniPng);
+var _bottomPng = require("./images/bottom.png");
+var _bottomPngDefault = parcelHelpers.interopDefault(_bottomPng);
 // create a pixi canvas
 const pixi = new _pixiJs.Application({
     width: 800,
     height: 450
 });
+const drawBuffer = new _pixiJs.Container();
+const renderTexture = _pixiJs.RenderTexture.create({
+    width: 1024,
+    height: 1024
+});
+const drawingStarted = false;
+const lastPosition = null;
 document.body.appendChild(pixi.view);
 // preload all the textures
 const loader = new _pixiJs.Loader();
-loader.add('') // laadt de images in de variabelen uit de import
-;
+// loader.add('', ) laadt de images in de variabelen uit de import
+loader.add('pepperoniTexture', _pepperoniPngDefault.default);
+loader.add('bottomTexture', _bottomPngDefault.default);
 loader.load(()=>loadCompleted()
 );
-// after loading is complete
+// [LOADING COMPLETE]
 function loadCompleted() {
-    let = new _pixiJs.Sprite(loader.resources[""].texture) // zet image om in een sprite en zet deze in een variabele
-    ;
-    pixi.stage.addChild() // voeg variabele toe aan het pixi canvas
-    ;
+    let pepperoni = new _pixiJs.Sprite(loader.resources["pepperoniTexture"].texture);
+    let bottom = new _pixiJs.Sprite(loader.resources["bottomTexture"].texture);
+    pixi.stage.addChild(pepperoni);
+    pixi.ticker.add((delta)=>update(delta)
+    );
+    //updaten positie van de pizza en registreren van een nieuwe pizza
+    function update(delta) {
+        pepperoni.y -= 5 * delta;
+        if (pepperoni.y < -600) {
+            pixi.stage.removeChild(pepperoni);
+            if (pixi.stage.children.length == 0) {
+                pixi.stage.addChild(bottom);
+                console.log(`is dat zo dylan?`);
+            }
+        }
+    }
+    pepperoni.anchor.set(0.5);
+    pepperoni.width = pixi.screen.height / 2;
+    pepperoni.height = pixi.screen.height / 2;
+    pepperoni.position.set(pixi.screen.width / 2, pixi.screen.height / 2);
+    pepperoni.interactive = true;
+    bottom.anchor.set(0.5);
+    bottom.width = pixi.screen.height / 2;
+    bottom.height = pixi.screen.height / 2;
+    bottom.position.set(pixi.screen.width / 2, pixi.screen.height / 2);
+    bottom.interactive = true;
 }
 
-},{"pixi.js":"dsYej"}],"dsYej":[function(require,module,exports) {
+},{"pixi.js":"dsYej","./images/pepperoni.png":"gmway","./images/bottom.png":"eBMYW","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"dsYej":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "utils", ()=>_utils
@@ -37063,6 +37098,46 @@ function __extends(d, b) {
     return AnimatedSprite1;
 }(_sprite.Sprite);
 
-},{"@pixi/core":"7PEF8","@pixi/sprite":"9mbxh","@pixi/ticker":"8ekG7","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}]},["fCkIi","kuM8f"], "kuM8f", "parcelRequired566")
+},{"@pixi/core":"7PEF8","@pixi/sprite":"9mbxh","@pixi/ticker":"8ekG7","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"gmway":[function(require,module,exports) {
+module.exports = require('./helpers/bundle-url').getBundleURL('FLaer') + "pepperoni.ae96c1c0.png" + "?" + Date.now();
+
+},{"./helpers/bundle-url":"lgJ39"}],"lgJ39":[function(require,module,exports) {
+"use strict";
+var bundleURL = {};
+function getBundleURLCached(id) {
+    var value = bundleURL[id];
+    if (!value) {
+        value = getBundleURL();
+        bundleURL[id] = value;
+    }
+    return value;
+}
+function getBundleURL() {
+    try {
+        throw new Error();
+    } catch (err) {
+        var matches = ('' + err.stack).match(/(https?|file|ftp|(chrome|moz)-extension):\/\/[^)\n]+/g);
+        if (matches) // The first two stack frames will be this function and getBundleURLCached.
+        // Use the 3rd one, which will be a runtime in the original bundle.
+        return getBaseURL(matches[2]);
+    }
+    return '/';
+}
+function getBaseURL(url) {
+    return ('' + url).replace(/^((?:https?|file|ftp|(chrome|moz)-extension):\/\/.+)\/[^/]+$/, '$1') + '/';
+} // TODO: Replace uses with `new URL(url).origin` when ie11 is no longer supported.
+function getOrigin(url) {
+    var matches = ('' + url).match(/(https?|file|ftp|(chrome|moz)-extension):\/\/[^/]+/);
+    if (!matches) throw new Error('Origin not found');
+    return matches[0];
+}
+exports.getBundleURL = getBundleURLCached;
+exports.getBaseURL = getBaseURL;
+exports.getOrigin = getOrigin;
+
+},{}],"eBMYW":[function(require,module,exports) {
+module.exports = require('./helpers/bundle-url').getBundleURL('FLaer') + "bottom.ef2a9a89.png" + "?" + Date.now();
+
+},{"./helpers/bundle-url":"lgJ39"}]},["fCkIi","kuM8f"], "kuM8f", "parcelRequired566")
 
 //# sourceMappingURL=index.83fbc3b8.js.map
