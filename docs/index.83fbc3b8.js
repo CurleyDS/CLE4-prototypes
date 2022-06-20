@@ -526,29 +526,101 @@ function hmrAcceptRun(bundle, id) {
 }
 
 },{}],"kuM8f":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "Game", ()=>Game
+);
 // import files
 var _pixiJs = require("pixi.js");
-// create a pixi canvas
-const pixi = new _pixiJs.Application({
-    width: 800,
-    height: 450
-});
-document.body.appendChild(pixi.view);
-// preload all the textures
-const loader = new _pixiJs.Loader();
-loader.add('') // laadt de images in de variabelen uit de import
-;
-loader.load(()=>loadCompleted()
-);
-// after loading is complete
-function loadCompleted() {
-    let = new _pixiJs.Sprite(loader.resources[""].texture) // zet image om in een sprite en zet deze in een variabele
-    ;
-    pixi.stage.addChild() // voeg variabele toe aan het pixi canvas
-    ;
+var _pizzaPng = require("./images/pizza.png");
+var _pizzaPngDefault = parcelHelpers.interopDefault(_pizzaPng);
+var _saucePng = require("./images/sauce.png");
+var _saucePngDefault = parcelHelpers.interopDefault(_saucePng);
+var _pizza = require("./pizza");
+var _sauce = require("./sauce");
+class Game {
+    sauce = [];
+    drawPosition = null;
+    drawingStarted = false;
+    constructor(){
+        // create a pixi canvas
+        this.pixi = new _pixiJs.Application({
+            width: 800,
+            height: 450
+        });
+        document.body.appendChild(this.pixi.view);
+        // preload all the textures
+        this.loader = new _pixiJs.Loader();
+        this.loader.add('pizzaTexture', _pizzaPngDefault.default) // laadt de images in de variabelen uit de import
+        .add('sauceTexture', _saucePngDefault.default); // laadt de images in de variabelen uit de import
+        this.loader.load(()=>this.loadCompleted()
+        );
+    }
+    // after loading is complete
+    loadCompleted() {
+        this.pizza = new _pizza.Pizza(this.loader.resources["pizzaTexture"].texture, this.pixi.screen.width, this.pixi.screen.height);
+        this.pixi.stage.addChild(this.pizza);
+        const onDown = (e)=>{
+            const position = this.pizza.toLocal(e.data.global);
+            position.x += 400; // canvas size is 1024x1024, so we offset the position by the half of its resolution
+            position.y += 225;
+            if (this.insideBorder(position)) {
+                this.drawPosition = position;
+                this.drawingStarted = true;
+            }
+        };
+        const onMove = (e)=>{
+            if (this.drawingStarted) {
+                const position = this.pizza.toLocal(e.data.global);
+                position.x += 400;
+                position.y += 225;
+                if (this.insideBorder(position)) {
+                    console.log("inside borders");
+                    this.drawPosition = position;
+                } else {
+                    console.log("outside borders");
+                    this.drawingStarted = false;
+                }
+            }
+        };
+        const onUp = (e)=>{
+            this.drawingStarted = false;
+        };
+        this.pizza.on('mousedown', onDown);
+        this.pizza.on('touchstart', onDown);
+        this.pizza.on('mousemove', onMove);
+        this.pizza.on('touchmove', onMove);
+        this.pizza.on('mouseup', onUp);
+        this.pizza.on('touchend', onUp);
+        this.pixi.ticker.add(()=>this.addSauce()
+        );
+    }
+    insideBorder(position) {
+        if (position != null) {
+            const bounds = this.pizza.hitbox;
+            let center = {
+                x: 400,
+                y: 225
+            };
+            let distance = (center.x - position.x) * (center.x - position.x) + (center.y - position.y) * (center.y - position.y);
+            let radius = bounds.radius * bounds.radius;
+            if (distance < radius) return true;
+            return false;
+        }
+    }
+    addSauce() {
+        if (this.insideBorder(this.drawPosition)) {
+            if (this.drawingStarted) {
+                let sauce = new _sauce.Sauce(this.loader.resources["sauceTexture"].texture, this.drawPosition);
+                this.pixi.stage.addChild(sauce);
+                this.sauce.push(sauce);
+            }
+        }
+    }
 }
+new Game();
 
-},{"pixi.js":"dsYej"}],"dsYej":[function(require,module,exports) {
+},{"pixi.js":"dsYej","./images/pizza.png":"eqZ8e","./images/sauce.png":"gec0Q","./pizza":"kAG7L","./sauce":"9hQyl","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"dsYej":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "utils", ()=>_utils
@@ -37063,6 +37135,87 @@ function __extends(d, b) {
     return AnimatedSprite1;
 }(_sprite.Sprite);
 
-},{"@pixi/core":"7PEF8","@pixi/sprite":"9mbxh","@pixi/ticker":"8ekG7","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}]},["fCkIi","kuM8f"], "kuM8f", "parcelRequired566")
+},{"@pixi/core":"7PEF8","@pixi/sprite":"9mbxh","@pixi/ticker":"8ekG7","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"eqZ8e":[function(require,module,exports) {
+module.exports = require('./helpers/bundle-url').getBundleURL('FLaer') + "pizza.b4e0a36a.png" + "?" + Date.now();
+
+},{"./helpers/bundle-url":"lgJ39"}],"lgJ39":[function(require,module,exports) {
+"use strict";
+var bundleURL = {};
+function getBundleURLCached(id) {
+    var value = bundleURL[id];
+    if (!value) {
+        value = getBundleURL();
+        bundleURL[id] = value;
+    }
+    return value;
+}
+function getBundleURL() {
+    try {
+        throw new Error();
+    } catch (err) {
+        var matches = ('' + err.stack).match(/(https?|file|ftp|(chrome|moz)-extension):\/\/[^)\n]+/g);
+        if (matches) // The first two stack frames will be this function and getBundleURLCached.
+        // Use the 3rd one, which will be a runtime in the original bundle.
+        return getBaseURL(matches[2]);
+    }
+    return '/';
+}
+function getBaseURL(url) {
+    return ('' + url).replace(/^((?:https?|file|ftp|(chrome|moz)-extension):\/\/.+)\/[^/]+$/, '$1') + '/';
+} // TODO: Replace uses with `new URL(url).origin` when ie11 is no longer supported.
+function getOrigin(url) {
+    var matches = ('' + url).match(/(https?|file|ftp|(chrome|moz)-extension):\/\/[^/]+/);
+    if (!matches) throw new Error('Origin not found');
+    return matches[0];
+}
+exports.getBundleURL = getBundleURLCached;
+exports.getBaseURL = getBaseURL;
+exports.getOrigin = getOrigin;
+
+},{}],"gec0Q":[function(require,module,exports) {
+module.exports = require('./helpers/bundle-url').getBundleURL('FLaer') + "sauce.5c73d642.png" + "?" + Date.now();
+
+},{"./helpers/bundle-url":"lgJ39"}],"kAG7L":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "Pizza", ()=>Pizza
+);
+var _pixiJs = require("pixi.js");
+class Pizza extends _pixiJs.Sprite {
+    constructor(texture, width, height){
+        super(texture);
+        this.anchor.set(0.5);
+        this.width = height / 2;
+        this.height = height / 2;
+        this.position.set(width / 2, height / 2);
+        this.interactive = true;
+        this.hitbox = new _pixiJs.Circle(0, 0, this.width / 2);
+    }
+    update(delta) {
+        if (this.y <= 0) this.y = 450;
+        else this.y -= 5 * delta;
+    }
+}
+
+},{"pixi.js":"dsYej","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"9hQyl":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "Sauce", ()=>Sauce
+);
+var _pixiJs = require("pixi.js");
+class Sauce extends _pixiJs.Sprite {
+    constructor(texture, position){
+        super(texture);
+        this.anchor.set(0.5);
+        this.x = position.x;
+        this.y = position.y;
+    }
+    update(delta) {
+        if (this.y <= 0) this.y = 450;
+        else this.y -= 5 * delta;
+    }
+}
+
+},{"pixi.js":"dsYej","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}]},["fCkIi","kuM8f"], "kuM8f", "parcelRequired566")
 
 //# sourceMappingURL=index.83fbc3b8.js.map
