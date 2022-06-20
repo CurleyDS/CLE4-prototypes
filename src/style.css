@@ -72,7 +72,7 @@ section {
 }
 
 /* PIXI canvas */
-.pixi-canvas {
+#pixi-canvas {
     background-color: black;
     width: 90%;
     height: 600px;
