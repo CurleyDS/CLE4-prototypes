@@ -4,6 +4,7 @@
 
 /* General */
 body {
+    background-image: linear-gradient(to top, darkred, yellow);
     font-size: 16px;
     margin: 0;
 }
@@ -15,6 +16,19 @@ main {
 section {
     display: flex;
     height: 100%;
+}
+
+.header-section {
+    display: inline;
+    margin: 0 1em;
+}
+
+.header-section img {
+    height: 100%;
+}
+
+.play-section {
+    max-width: 0;
 }
 
 /* Horizontal Sections */
