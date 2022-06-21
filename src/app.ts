@@ -1,9 +1,7 @@
 // import files
 import * as PIXI from 'pixi.js'
 import pizzaImage from './images/pizza.png'
-import sauceImage from './images/sauce.png'
 import { Pizza } from "./pizza"
-import { Sauce } from "./sauce"
 
 export class Game {
 
@@ -11,9 +9,6 @@ export class Game {
   	pixi:PIXI.Application;
 	resetButton:any = document.getElementById('reset');
 	pizza:Pizza;
-	sauce:Sauce[] = [];
-	drawPosition:any = null;
-	drawingStarted:boolean = false;
 	loader:PIXI.Loader;
 	
 	constructor() {
@@ -25,7 +20,6 @@ export class Game {
 		this.loader = new PIXI.Loader();
 		this.loader
 			.add('pizzaTexture', pizzaImage) // laadt de images in de variabelen uit de import
-			.add('sauceTexture', sauceImage); // laadt de images in de variabelen uit de import
 		this.loader.load(() => this.loadCompleted());
 	}
 
@@ -38,62 +32,7 @@ export class Game {
 		);
 		this.pixi.stage.addChild(this.pizza);
 		
-		const onDown = (e:any) => {
-			const position = this.pizza.toLocal(e.data.global);
-			position.x += 400; // canvas size is 1024x1024, so we offset the position by the half of its resolution
-			position.y += 225;
-
-			if (this.insideBorder(position)) {
-				this.drawPosition = position;
-				this.drawingStarted = true;
-			}
-		}
-
-		const onMove = (e:any) => {
-			if (this.drawingStarted) {
-				const position = this.pizza.toLocal(e.data.global);
-				position.x += 400;
-				position.y += 225;
-
-				if (this.insideBorder(position)) {
-					console.log("inside borders");
-					this.drawPosition = position;
-				} else {
-					console.log("outside borders");
-					this.drawingStarted = false;
-				}
-			}
-		}
-
-		const onUp = (e:any) => {
-			this.drawingStarted = false;
-		}
-
-		this.pizza.on('mousedown', onDown);
-		this.pizza.on('touchstart', onDown);
-		this.pizza.on('mousemove', onMove);
-		this.pizza.on('touchmove', onMove);
-		this.pizza.on('mouseup', onUp);
-		this.pizza.on('touchend', onUp);
-
-		this.pixi.ticker.add((delta) => this.addSauce(delta));
-	}
-  
-	insideBorder(position:any) {
-		if (position != null) {
-			const bounds = this.pizza.hitbox;
-			let center = {
-				x: 400,
-				y: 225
-			};
-	
-			let distance = (center.x - position.x) * (center.x - position.x) + (center.y - position.y) * (center.y - position.y);
-			let radius = bounds.radius * bounds.radius;
-			if (distance < radius) {
-				return true;
-			}
-			return false;
-		}
+		this.pixi.ticker.add((delta) => this.update(delta));
 	}
 
 	resetPizza() {
@@ -103,14 +42,8 @@ export class Game {
 		return false;
 	}
 
-	addSauce(delta:number) {
-		if (this.insideBorder(this.drawPosition)) {
-			if (this.drawingStarted) {
-				let sauce = new Sauce(this.loader.resources["sauceTexture"].texture!, this.drawPosition)
-				this.pixi.stage.addChild(sauce);
-				this.sauce.push(sauce);
-			}
-		}
+	update(delta:number) {
+		this.pizza.update(delta);
 		
 		if (this.resetPizza()) {
 			this.pizza.y -= 5 * delta
