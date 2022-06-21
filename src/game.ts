@@ -10,6 +10,7 @@ export class Game {
   	pixi:PIXI.Application;
 	resetButton:any = document.getElementById('reset');
 	pizza:Pizza;
+	sound:any;
 	loader:PIXI.Loader;
 	
 	constructor() {
@@ -35,8 +36,8 @@ export class Game {
 		);
 		this.pixi.stage.addChild(this.pizza);
     
-		let sound = this.loader.resources["bgm"].data;
-		sound.play();
+		this.sound = this.loader.resources["bgm"].data;
+		this.sound.volume = 0.25;
 		
 		this.pixi.ticker.add((delta) => this.update(delta));
 	}
@@ -50,6 +51,8 @@ export class Game {
 
 	update(delta:number) {
 		this.pizza.update(delta);
+
+		this.sound.play();
 		
 		if (this.resetPizza()) {
 			this.pizza.y -= 5 * delta
