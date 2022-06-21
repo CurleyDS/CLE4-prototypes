@@ -1,6 +1,7 @@
 // import files
 import * as PIXI from 'pixi.js'
 import pizzaImage from './images/pizza.png'
+import musicBackground from "url:./audio/bgm.mp3";
 import { Pizza } from "./pizza"
 
 export class Game {
@@ -20,6 +21,8 @@ export class Game {
 		this.loader = new PIXI.Loader();
 		this.loader
 			.add('pizzaTexture', pizzaImage) // laadt de images in de variabelen uit de import
+      .add("bgm", musicBackground)
+
 		this.loader.load(() => this.loadCompleted());
 	}
 
@@ -31,6 +34,9 @@ export class Game {
 			this.pixi.screen.height
 		);
 		this.pixi.stage.addChild(this.pizza);
+    
+    let sound = loader.resources["bgm"].data;
+    sound.play();
 		
 		this.pixi.ticker.add((delta) => this.update(delta));
 	}
