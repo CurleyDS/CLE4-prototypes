@@ -1,64 +1,73 @@
 // import files
 import * as PIXI from 'pixi.js'
-import pepperoniPizza from "./images/pepperoni.png"
-import bottomPizza from "./images/bottom.png"
-import { PlaneGeometry } from 'pixi.js';
+import pizzaImage from './images/pizza.png'
 import musicBackground from "url:./audio/bgm.mp3";
+import { Pizza } from "./pizza"
 
+export class Game {
 
-// create a pixi canvas
-const pixi = new PIXI.Application({ width: 800, height: 450 })
-const drawBuffer = new PIXI.Container();
-const renderTexture = PIXI.RenderTexture.create({width: 1024, height: 1024});
+	pixiCanvas:any = document.getElementById("pixi-canvas");
+  	pixi:PIXI.Application;
+	resetButton:any = document.getElementById('reset');
+	pizza:Pizza;
+	loader:PIXI.Loader;
+	
+	constructor() {
+		// create a pixi canvas
+		this.pixi = new PIXI.Application({ width: 800, height: 450});
+		this.pixiCanvas.appendChild(this.pixi.view);
 
-const drawingStarted = false;
-const lastPosition = null;
+		// preload all the textures
+		this.loader = new PIXI.Loader();
+		this.loader
+			.add('pizzaTexture', pizzaImage) // laadt de images in de variabelen uit de import
+      .add("bgm", musicBackground)
 
-document.body.appendChild(pixi.view)
+		this.loader.load(() => this.loadCompleted());
+	}
 
-// preload all the textures
-const loader = new PIXI.Loader()
-// loader.add('', ) laadt de images in de variabelen uit de import
-loader.add("bgm", musicBackground)
-loader.add('pepperoniTexture', pepperoniPizza)
-loader.add('bottomTexture', bottomPizza)
-loader.load(()=>loadCompleted())
+	// after loading is complete
+	loadCompleted() {
+		this.pizza = new Pizza(
+			this.loader.resources["pizzaTexture"].texture!,
+			this.pixi.screen.width,
+			this.pixi.screen.height
+		);
+		this.pixi.stage.addChild(this.pizza);
+    
+    let sound = loader.resources["bgm"].data;
+    sound.play();
+		
+		this.pixi.ticker.add((delta) => this.update(delta));
+	}
 
+	resetPizza() {
+		if (this.resetButton.checked) {
+			return true;
+		}
+		return false;
+	}
 
-
-// [LOADING COMPLETE]
-let sound = loader.resources["bgm"].data;
-sound.play();
-function loadCompleted() {
-    let pepperoni = new PIXI.Sprite(loader.resources["pepperoniTexture"].texture!)
-    let bottom = new PIXI.Sprite(loader.resources["bottomTexture"].texture!)
-    pixi.stage.addChild(pepperoni);
-    pixi.ticker.add((delta) => update(delta))
-
-
-//updaten positie van de pizza en registreren van een nieuwe pizza
-    function update(delta:number) {
-        pepperoni.y -= 5 * delta
-        if (pepperoni.y < -600) {
-            pixi.stage.removeChild(pepperoni)
-            if (pixi.stage.children.length == 0){
-                pixi.stage.addChild(bottom);
-                console.log(`is dat zo dylan?`)
-            }
-        }
-    }
-
-    pepperoni.anchor.set(0.5);
-    pepperoni.width = pixi.screen.height / 2;
-    pepperoni.height = pixi.screen.height / 2;
-    pepperoni.position.set(pixi.screen.width / 2, pixi.screen.height / 2);
-    pepperoni.interactive = true;
-
-    bottom.anchor.set(0.5);
-    bottom.width = pixi.screen.height / 2;
-    bottom.height = pixi.screen.height / 2;
-    bottom.position.set(pixi.screen.width / 2, pixi.screen.height / 2);
-    bottom.interactive = true;
+	update(delta:number) {
+		this.pizza.update(delta);
+		
+		if (this.resetPizza()) {
+			this.pizza.y -= 5 * delta
+			if (this.pizza.y < -600) {
+				this.pixi.stage.removeChild(this.pizza)
+				if (this.pixi.stage.children.length == 0){
+					this.pizza = new Pizza(
+						this.loader.resources["pizzaTexture"].texture!,
+						this.pixi.screen.width,
+						this.pixi.screen.height
+					);
+					this.pixi.stage.addChild(this.pizza);
+					this.resetButton.checked = false;
+				}
+			}
+		}
+	}
 
 }
 
+new Game();

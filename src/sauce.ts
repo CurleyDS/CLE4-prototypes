@@ -8,12 +8,4 @@ export class Sauce extends PIXI.Sprite {
         this.x = position.x;
         this.y = position.y;
     }
-
-    public update(delta:number) {
-        if (this.y <= 0) {
-            this.y = 450
-        } else {
-            this.y -= 5 * delta
-        }
-    }
 }
