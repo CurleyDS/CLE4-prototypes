@@ -21,7 +21,7 @@ export class Game {
 		this.loader = new PIXI.Loader();
 		this.loader
 			.add('pizzaTexture', pizzaImage) // laadt de images in de variabelen uit de import
-      .add("bgm", musicBackground)
+      		.add("bgm", musicBackground)
 
 		this.loader.load(() => this.loadCompleted());
 	}
@@ -35,8 +35,8 @@ export class Game {
 		);
 		this.pixi.stage.addChild(this.pizza);
     
-    let sound = loader.resources["bgm"].data;
-    sound.play();
+		let sound = this.loader.resources["bgm"].data;
+		sound.play();
 		
 		this.pixi.ticker.add((delta) => this.update(delta));
 	}
