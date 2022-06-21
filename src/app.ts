@@ -7,7 +7,9 @@ import { Sauce } from "./sauce"
 
 export class Game {
 
-	pixi:PIXI.Application;
+	pixiCanvas:any = document.getElementById("pixi-canvas");
+  	pixi:PIXI.Application;
+	resetButton:any = document.getElementById('reset');
 	pizza:Pizza;
 	sauce:Sauce[] = [];
 	drawPosition:any = null;
@@ -17,7 +19,7 @@ export class Game {
 	constructor() {
 		// create a pixi canvas
 		this.pixi = new PIXI.Application({ width: 800, height: 450, });
-		document.body.appendChild(this.pixi.view);
+		this.pixiCanvas.appendChild(this.pixi.view);
 
 		// preload all the textures
 		this.loader = new PIXI.Loader();
@@ -74,9 +76,9 @@ export class Game {
 		this.pizza.on('mouseup', onUp);
 		this.pizza.on('touchend', onUp);
 
-		this.pixi.ticker.add(() => this.addSauce());
+		this.pixi.ticker.add((delta) => this.addSauce(delta));
 	}
-
+  
 	insideBorder(position:any) {
 		if (position != null) {
 			const bounds = this.pizza.hitbox;
@@ -94,12 +96,35 @@ export class Game {
 		}
 	}
 
-	addSauce() {
+	resetPizza() {
+		if (this.resetButton.checked) {
+			return true;
+		}
+		return false;
+	}
+
+	addSauce(delta:number) {
 		if (this.insideBorder(this.drawPosition)) {
 			if (this.drawingStarted) {
 				let sauce = new Sauce(this.loader.resources["sauceTexture"].texture!, this.drawPosition)
 				this.pixi.stage.addChild(sauce);
 				this.sauce.push(sauce);
+			}
+		}
+		
+		if (this.resetPizza()) {
+			this.pizza.y -= 5 * delta
+			if (this.pizza.y < -600) {
+				this.pixi.stage.removeChild(this.pizza)
+				if (this.pixi.stage.children.length == 0){
+					this.pizza = new Pizza(
+						this.loader.resources["pizzaTexture"].texture!,
+						this.pixi.screen.width,
+						this.pixi.screen.height
+					);
+					this.pixi.stage.addChild(this.pizza);
+					this.resetButton.checked = false;
+				}
 			}
 		}
 	}
