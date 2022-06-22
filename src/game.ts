@@ -9,6 +9,7 @@ export class Game {
 	pixiCanvas:any = document.getElementById("pixi-canvas");
   	pixi:PIXI.Application;
 	resetButton:any = document.getElementById('reset');
+	ingredientButton:any = document.getElementById('ingredient');
 	pizza:Pizza;
 	sound:any;
 	loader:PIXI.Loader;
@@ -49,8 +50,15 @@ export class Game {
 		return false;
 	}
 
+	toggleIngredient(){
+		if (this.ingredientButton.checked) {
+			return true;
+		}
+		return false;
+	}
+
 	update(delta:number) {
-		this.pizza.update(delta);
+		this.pizza.update(delta, this.toggleIngredient());
 
 		this.sound.play();
 		
