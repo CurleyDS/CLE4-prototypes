@@ -45,6 +45,7 @@ export class Game {
 
 	resetPizza() {
 		if (this.resetButton.checked) {
+			this.resetButton.disabled = true;
 			return true;
 		}
 		return false;
@@ -74,6 +75,7 @@ export class Game {
 					);
 					this.pixi.stage.addChild(this.pizza);
 					this.resetButton.checked = false;
+					this.resetButton.disabled = false;
 				}
 			}
 		}
