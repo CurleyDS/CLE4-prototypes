@@ -1,6 +1,8 @@
 import * as PIXI from "pixi.js"
 import sauceImage from './images/sauce.png'
 import { Sauce } from "./sauce"
+import cheeseImage from './images/chuckecheese.png'
+import { Cheese } from "./cheese"
 
 export class Pizza extends PIXI.Sprite {
     
@@ -9,6 +11,7 @@ export class Pizza extends PIXI.Sprite {
 	drawPosition:any = null;
 	drawingStarted:boolean = false;
 	sauce:Sauce[] = [];
+	cheese: Cheese[] = [];
 
     constructor(texture: PIXI.Texture, width:any, height:any) {
         
@@ -58,6 +61,7 @@ export class Pizza extends PIXI.Sprite {
 
         this.loader = new PIXI.Loader();
 		this.loader.add('sauceTexture', sauceImage); // laadt de images in de variabelen uit de import
+		this.loader.add('cheeseTexture', cheeseImage);
 		this.loader.load(() => {});
     }
     
@@ -74,13 +78,23 @@ export class Pizza extends PIXI.Sprite {
 		}
 	}
 
-    public update(delta:number) {
+
+    public update(delta:number, sauceSelected:boolean) {
         if (this.insideBorder(this.drawPosition)) {
             if (this.drawingStarted) {
-                let sauce = new Sauce(this.loader.resources["sauceTexture"].texture!, this.drawPosition)
-                this.addChild(sauce);
-				this.sauce.push(sauce);
+					if (sauceSelected == false) {
+						let sauce = new Sauce(this.loader.resources["sauceTexture"].texture!, this.drawPosition)
+						this.addChild(sauce);
+						this.sauce.push(sauce);
+					}
+					else if (sauceSelected == true) {
+						let cheese = new Cheese(this.loader.resources["cheeseTexture"].texture!, this.drawPosition)
+						this.addChild(cheese);
+						this.cheese.push(cheese);
+					}
 			}
 		}
     }
+
+
 }
