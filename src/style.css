@@ -28,7 +28,7 @@ section {
 }
 
 .play-section {
-    max-width: 0;
+    background-color: transparent;
 }
 
 /* Horizontal Sections */
