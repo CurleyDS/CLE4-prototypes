@@ -10,7 +10,7 @@ export class App {
     
     constructor() {
         // create a pixi canvas
-		this.pixi = new PIXI.Application({width: 700, height: window.innerHeight, backgroundAlpha: 0});
+		this.pixi = new PIXI.Application({width: 700, backgroundAlpha: 0});
 		this.pixiCanvas.appendChild(this.pixi.view);
 
         this.loader = new PIXI.Loader()
