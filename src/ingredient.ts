@@ -1,6 +1,6 @@
 import * as PIXI from "pixi.js"
 
-export class Sauce extends PIXI.Sprite {
+export class Ingredient extends PIXI.Sprite {
     
     constructor(texture: PIXI.Texture, position:any) {
         super(texture)

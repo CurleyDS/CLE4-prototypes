@@ -4,6 +4,7 @@
 
 /* General */
 body {
+    background-image: linear-gradient(to top, darkred, yellow);
     font-size: 16px;
     margin: 0;
 }
@@ -14,7 +15,21 @@ main {
 
 section {
     display: flex;
+    max-height: 100%;
+}
+
+.header-section {
+    display: inline;
+    margin: 0 1em;
+}
+
+.header-section img {
     height: 100%;
+}
+
+.play-section {
+    display: inline;
+    background-color: transparent;
 }
 
 /* Horizontal Sections */
@@ -67,13 +82,25 @@ section {
     color: #29da29;
 }
 
-.checked::before {
-    content: "\2713";
+/* Ingredient check boxes */
+.ingredient-check-box {
+    background-color: grey;
+    border: solid 1px black;
+    border-radius: 1rem;
+    width: 280px;
+    height: 140px;
 }
 
-/* PIXI canvas */
-#pixi-canvas {
-    background-color: black;
-    width: 90%;
-    height: 600px;
+.ingredient-check-box img {
+    border-radius: 1rem;
+    width: 100%;
+    height: 100%;
+}
+
+.ingredient-check-box input {
+    display: none;
+}
+
+.checked::before {
+    content: "\2713";
 }
