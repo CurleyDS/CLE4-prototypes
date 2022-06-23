@@ -82,6 +82,25 @@ section {
     color: #29da29;
 }
 
+/* Ingredient check boxes */
+.ingredient-check-box {
+    background-color: grey;
+    border: solid 1px black;
+    border-radius: 1rem;
+    width: 280px;
+    height: 140px;
+}
+
+.ingredient-check-box img {
+    border-radius: 1rem;
+    width: 100%;
+    height: 100%;
+}
+
+.ingredient-check-box input {
+    display: none;
+}
+
 .checked::before {
     content: "\2713";
 }
