@@ -1,8 +1,8 @@
 import * as PIXI from "pixi.js"
 import sauceImage from './images/sauce.png'
-import { Sauce } from "./sauce"
 import cheeseImage from './images/chuckecheese.png'
-import { Cheese } from "./cheese"
+import onionImage from './images/onion.png'
+import { Ingredient } from "./ingredient"
 
 export class Pizza extends PIXI.Sprite {
     
@@ -10,8 +10,7 @@ export class Pizza extends PIXI.Sprite {
     hitbox:PIXI.Circle;
 	drawPosition:any = null;
 	drawingStarted:boolean = false;
-	sauce:Sauce[] = [];
-	cheese: Cheese[] = [];
+	ingredients:Ingredient[] = [];
 
     constructor(texture: PIXI.Texture, width:any, height:any) {
         
@@ -62,6 +61,7 @@ export class Pizza extends PIXI.Sprite {
         this.loader = new PIXI.Loader();
 		this.loader.add('sauceTexture', sauceImage); // laadt de images in de variabelen uit de import
 		this.loader.add('cheeseTexture', cheeseImage);
+		this.loader.add('onionTexture', onionImage);
 		this.loader.load(() => {});
     }
     
@@ -79,18 +79,21 @@ export class Pizza extends PIXI.Sprite {
 	}
 
 
-    public update(delta:number, sauceSelected:boolean) {
-        if (this.insideBorder(this.drawPosition)) {
+    public update(delta:number, ingredientSelected:number) {
+		if (this.insideBorder(this.drawPosition)) {
             if (this.drawingStarted) {
-					if (sauceSelected == false) {
-						let sauce = new Sauce(this.loader.resources["sauceTexture"].texture!, this.drawPosition)
+					if (ingredientSelected == 0) {
+						let sauce = new Ingredient(this.loader.resources["sauceTexture"].texture!, this.drawPosition)
 						this.addChild(sauce);
-						this.sauce.push(sauce);
-					}
-					else if (sauceSelected == true) {
-						let cheese = new Cheese(this.loader.resources["cheeseTexture"].texture!, this.drawPosition)
+						this.ingredients.push(sauce);
+					} else if (ingredientSelected == 1) {
+						let cheese = new Ingredient(this.loader.resources["cheeseTexture"].texture!, this.drawPosition)
 						this.addChild(cheese);
-						this.cheese.push(cheese);
+						this.ingredients.push(cheese);
+					} else if (ingredientSelected == 2) {
+						let onion = new Ingredient(this.loader.resources["onionTexture"].texture!, this.drawPosition)
+						this.addChild(onion);
+						this.ingredients.push(onion);
 					}
 			}
 		}

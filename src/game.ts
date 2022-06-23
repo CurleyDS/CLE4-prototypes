@@ -9,7 +9,9 @@ export class Game {
 	pixiCanvas:any = document.getElementById("pixi-canvas");
   	pixi:PIXI.Application;
 	resetButton:any = document.getElementById('reset');
-	ingredientButton:any = document.getElementById('ingredient');
+	ingredientButtons:HTMLCollectionOf<Element>;
+	oldIngredient:number;
+	currentIngredient:number;
 	pizza:Pizza;
 	sound:any;
 	loader:PIXI.Loader;
@@ -18,6 +20,8 @@ export class Game {
 		// create a pixi canvas
 		this.pixi = new PIXI.Application({ width: 800, height: 450});
 		this.pixiCanvas.appendChild(this.pixi.view);
+
+		this.ingredientButtons = document.getElementsByClassName('ingredient');
 
 		// preload all the textures
 		this.loader = new PIXI.Loader();
@@ -51,16 +55,23 @@ export class Game {
 		return false;
 	}
 
-	toggleIngredient(){
-		if (this.ingredientButton.checked) {
-			return true;
+	toggleIngredient() {
+		for (var x = 0; x < this.ingredientButtons.length; x++) {
+			if (this.oldIngredient != this.currentIngredient) {
+				if (typeof this.oldIngredient !== 'undefined' && this.ingredientButtons[this.oldIngredient].checked) {
+					this.ingredientButtons[this.oldIngredient].checked = false;
+				}
+				this.oldIngredient = this.currentIngredient;
+			}
+			if (this.ingredientButtons[x].checked) {
+				this.currentIngredient = x;
+			}
 		}
-		return false;
 	}
 
 	update(delta:number) {
-		this.pizza.update(delta, this.toggleIngredient());
-
+		this.toggleIngredient();
+		this.pizza.update(delta, this.currentIngredient);
 		this.sound.play();
 		
 		if (this.resetPizza()) {
@@ -74,6 +85,11 @@ export class Game {
 						this.pixi.screen.height
 					);
 					this.pixi.stage.addChild(this.pizza);
+					
+					for (let x = 0; x < this.ingredientButtons.length; x++) {
+						this.ingredientButtons[x].checked = false;
+					}
+
 					this.resetButton.checked = false;
 					this.resetButton.disabled = false;
 				}
